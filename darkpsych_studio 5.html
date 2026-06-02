@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>🧠 Dark Psych Studio</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#080808;--c1:#111;--c2:#181818;--c3:#1f1f1f;
+  --b1:#222;--b2:#2d2d2d;--b3:#3a3a3a;
+  --lime:#c8ff00;--pink:#ff3cac;--blue:#38bdf8;--green:#4ade80;--red:#f87171;--amber:#fbbf24;--purple:#a78bfa;
+  --tx:#ebebeb;--mu:#666;--di:#333;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--tx);background:var(--bg);
+}
+html,body{height:100%;overflow:hidden}
+#app{height:100%;display:flex;flex-direction:column}
+.tabs{display:flex;background:var(--c1);border-bottom:.5px solid var(--b1);flex-shrink:0;position:relative;z-index:10}
+.tab{flex:1;padding:13px 4px 11px;border:none;background:none;color:var(--mu);font-size:11px;font-weight:700;letter-spacing:.04em;cursor:pointer;border-bottom:2px solid transparent;transition:color .2s}
+.tab.on{color:var(--lime);border-bottom-color:var(--lime)}
+.pages{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.page{padding:14px;max-width:580px;margin:0 auto;padding-bottom:100px;display:none}
+.page.on{display:block}
+/* PROGRESS BAR */
+.global-prog{height:3px;background:var(--bg);position:relative;flex-shrink:0}
+.global-prog-fill{height:100%;background:linear-gradient(90deg,var(--lime),var(--blue));transition:width .4s;width:0}
+/* TYPOGRAPHY */
+.ttl{font-size:19px;font-weight:800;letter-spacing:-.3px;margin-bottom:2px}
+.sub{color:var(--mu);font-size:12px;margin-bottom:16px;line-height:1.5}
+.sec-hdr{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mu);margin:14px 0 8px}
+/* CARDS */
+.card{background:var(--c1);border:.5px solid var(--b1);border-radius:12px;padding:13px;margin-bottom:9px;cursor:pointer;transition:border-color .15s}
+.card:active{background:var(--c2)}
+.c-pill{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.c-title{font-weight:700;font-size:13px;line-height:1.35;margin-bottom:8px}
+.c-foot{display:flex;align-items:center;justify-content:space-between}
+.c-num{font-size:10px;color:var(--di);position:absolute;top:10px;right:12px}
+.card{position:relative}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--c1);border:.5px solid var(--b1);border-radius:10px;padding:10px;text-align:center}
+.stat-n{font-size:22px;font-weight:800}
+.stat-l{font-size:10px;color:var(--mu);margin-top:1px}
+/* FILTERS */
+.filters{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.ftag{background:transparent;border:.5px solid var(--b2);border-radius:20px;padding:5px 13px;font-size:11px;font-weight:600;color:var(--mu);cursor:pointer}
+.ftag.on{border-color:var(--lime);color:var(--lime);background:rgba(200,255,0,.05)}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px}
+.b-q{background:var(--c3);color:var(--mu);border:.5px solid var(--b2)}
+.b-go{background:rgba(200,255,0,.1);color:var(--lime);border:.5px solid rgba(200,255,0,.25)}
+.b-done{background:rgba(74,222,128,.1);color:var(--green);border:.5px solid rgba(74,222,128,.25)}
+.b-err{background:rgba(248,113,113,.1);color:var(--red);border:.5px solid rgba(248,113,113,.25)}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-family:-apple-system,sans-serif;transition:opacity .15s}
+.btn:active{opacity:.7}
+.btn:disabled{opacity:.35;pointer-events:none}
+.btn-lime{background:var(--lime);color:#000;font-size:15px;padding:14px 20px;width:100%}
+.btn-ghost{background:transparent;border:.5px solid var(--b2);color:var(--mu);font-size:13px;padding:10px 16px}
+.btn-ghost:active{border-color:var(--blue);color:var(--blue)}
+.btn-green{background:var(--green);color:#000;font-size:14px;padding:12px 18px}
+.btn-pink{background:var(--pink);color:#fff;font-size:13px;padding:10px 16px}
+.btn-red{background:transparent;border:.5px solid rgba(248,113,113,.3);color:var(--red);font-size:12px;padding:8px 14px;border-radius:8px;cursor:pointer;font-family:-apple-system,sans-serif}
+.btn-sm{font-size:12px;padding:8px 14px}
+.btn-xs{font-size:11px;padding:5px 11px;border-radius:7px}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+/* STUDIO */
+.st-back{font-size:12px;color:var(--mu);cursor:pointer;margin-bottom:10px;display:flex;align-items:center;gap:4px}
+.st-post{background:var(--c1);border:.5px solid var(--b1);border-radius:12px;padding:13px;margin-bottom:12px}
+.st-pill{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.st-title{font-weight:800;font-size:16px;line-height:1.3;margin-bottom:6px}
+/* PIPELINE STEPS */
+.steps{display:flex;flex-direction:column;gap:0}
+.step{display:flex;align-items:flex-start;gap:11px;padding:10px 0;border-bottom:.5px solid var(--b1)}
+.step:last-child{border-bottom:none}
+.si{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:1px;font-weight:700}
+.si-w{background:var(--c3);border:.5px solid var(--b2);color:var(--mu)}
+.si-r{background:rgba(200,255,0,.12);border:.5px solid rgba(200,255,0,.35);color:var(--lime)}
+.si-d{background:rgba(74,222,128,.12);border:.5px solid rgba(74,222,128,.35);color:var(--green)}
+.si-e{background:rgba(248,113,113,.12);border:.5px solid rgba(248,113,113,.35);color:var(--red)}
+.st-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.st-det{font-size:11px;color:var(--mu);line-height:1.4}
+.st-det.ok{color:var(--green)}.st-det.err{color:var(--red)}.st-det.info{color:var(--blue)}
+/* LIVE LOG */
+.logpanel{background:#05080e;border:.5px solid var(--b1);border-radius:10px;margin:10px 0;overflow:hidden}
+.logpanel-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 11px;border-bottom:.5px solid var(--b1);cursor:pointer}
+.lp-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mu)}
+.lp-toggle{font-size:11px;color:var(--di)}
+.loglines{font-family:monospace;font-size:11px;padding:8px 11px;max-height:160px;overflow-y:auto;-webkit-overflow-scrolling:touch;line-height:1.7}
+.loglines.collapsed{display:none}
+.ll{display:flex;gap:7px}
+.llt{color:var(--di);flex-shrink:0}
+.ll-ok{color:var(--green)}.ll-err{color:var(--red)}.ll-info{color:var(--blue)}.ll-warn{color:var(--amber)}
+/* SPIN */
+.spin{width:12px;height:12px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--lime);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* MEDIA STRIP */
+.mstrip{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;-webkit-overflow-scrolling:touch}
+.mthumb{width:60px;height:106px;flex-shrink:0;border-radius:8px;background:var(--c3);border:.5px solid var(--b2);overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;flex-direction:column;gap:3px}
+.mthumb img,.mthumb video{width:100%;height:100%;object-fit:cover}
+.mthumb.gen{border-color:var(--lime)}.mthumb.ok{border-color:rgba(74,222,128,.4)}.mthumb.vid{border-color:var(--blue)}.mthumb.err{border-color:var(--red)}
+.mt-n{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:8px;color:var(--mu)}
+.mt-type{position:absolute;top:2px;left:2px;font-size:7px;font-weight:700;padding:1px 4px;border-radius:3px}
+.mt-img{background:rgba(200,255,0,.2);color:var(--lime)}.mt-vid{background:rgba(56,189,248,.2);color:var(--blue)}.mt-cache{background:rgba(56,189,248,.15);color:var(--blue)}
+/* TEXT BOXES */
+.tbox{background:var(--c2);border:.5px solid var(--b2);border-radius:10px;padding:12px;font-size:12px;line-height:1.7;color:#ccc;white-space:pre-wrap;max-height:140px;overflow-y:auto;margin-bottom:8px}
+.tags-ln{font-size:11px;color:var(--blue);line-height:1.8;margin-bottom:10px}
+.cp-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.cp-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mu)}
+.cp-btn{background:transparent;border:.5px solid var(--b2);border-radius:6px;padding:4px 11px;font-size:11px;font-weight:600;color:var(--mu);cursor:pointer;font-family:-apple-system,sans-serif}
+.cp-btn:active{border-color:var(--blue);color:var(--blue)}
+/* DONE PANEL */
+.done-card{background:rgba(74,222,128,.05);border:.5px solid rgba(74,222,128,.25);border-radius:12px;padding:13px;margin-bottom:12px}
+.done-title{font-size:16px;font-weight:800;color:var(--green);margin-bottom:4px}
+.done-sub{font-size:12px;color:var(--mu);margin-bottom:12px}
+/* ALERTS */
+.alert{padding:10px 13px;border-radius:10px;font-size:12px;margin-bottom:10px;line-height:1.5}
+.al-warn{background:rgba(251,191,36,.07);border:.5px solid rgba(251,191,36,.25);color:#c8a96e}
+.al-info{background:rgba(56,189,248,.07);border:.5px solid rgba(56,189,248,.25);color:var(--blue)}
+.al-ok{background:rgba(74,222,128,.07);border:.5px solid rgba(74,222,128,.25);color:var(--green)}
+/* SETUP */
+.sf label{display:block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin-bottom:5px}
+.sf input{width:100%;background:var(--c2);border:.5px solid var(--b2);border-radius:8px;padding:10px 12px;color:var(--tx);font-size:13px;font-family:monospace;outline:none;-webkit-appearance:none;margin-bottom:4px}
+.sf input:focus{border-color:var(--blue)}
+.sf{margin-bottom:14px}
+.hint{font-size:11px;color:var(--di);line-height:1.5}
+/* POST TIPS */
+.tips{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.tip{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:var(--mu);line-height:1.4}
+.tip-icon{flex-shrink:0;font-size:14px}
+/* DIVIDER */
+hr{border:none;border-top:.5px solid var(--b1);margin:14px 0}
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--c2);border:.5px solid var(--b2);border-radius:10px;padding:9px 18px;font-size:13px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:999;white-space:nowrap;box-shadow:0 4px 24px rgba(0,0,0,.6)}
+#toast.show{opacity:1}
+/* EMPTY */
+.empty{text-align:center;padding:40px 16px;color:var(--mu)}
+.empty-i{font-size:40px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="tabs">
+    <button class="tab on" data-tab="library" onclick="showTab('library')">📚 Library</button>
+    <button class="tab" data-tab="studio" onclick="showTab('studio')">🎬 Studio</button>
+    <button class="tab" data-tab="setup" onclick="showTab('setup')">⚙️ Setup</button>
+  </div>
+  <div class="global-prog"><div class="global-prog-fill" id="globalProg"></div></div>
+  <div class="pages">
+    <div class="page on" id="page-library"></div>
+    <div class="page" id="page-studio"></div>
+    <div class="page" id="page-setup"></div>
+  </div>
+</div>
+<canvas id="offscreen" width="540" height="960" style="display:none"></canvas>
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════════
+// KEYS — update here when rotating
+// ══════════════════════════════════════════════════════════════
+const KEYS = {
+  claude:     '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',
+  gemini:     'AQ.Ab8RN6LrX_1ClT5DtC87l5N4Y7qAYdZEiEhf3kRzEFsmKIkIpA',
+  elevenlabs: 'sk_1e8ca8383d0ab2385d9d9ae2b1c84b2e6cfad36aa4491143',
+};
+const EL_VOICE  = 'pNInz6obpgDQGcFmaJgB'; // Adam
+const IMG_STYLE = 'Cinematic vertical 9:16, photorealistic, ultra-detailed, dark moody atmosphere, deep shadows, cold blue-grey tones, editorial photography style, no text overlays, no watermarks, dramatic side lighting';
+const FADE_DUR  = 0.5;
+
+// ══════════════════════════════════════════════════════════════
+// POST DATA
+// ══════════════════════════════════════════════════════════════
+const POSTS = [
+  {id:1,pillar:'psych',title:'The Silent Treatment Is a Weapon',caption:'They go quiet. You spiral. That\'s the plan.\n\nSilence used as punishment is one of the oldest manipulation tactics in existence. It\'s designed to make YOU feel anxious, guilty, and desperate — even when you did nothing wrong.\n\n→ They\'re testing your emotional threshold\n→ Rewarding your anxiety with eventual attention\n→ Training you to walk on eggshells\n\nOnce you recognize it, you can\'t be controlled by it.\n\nSave this. You\'ll need it.',tags:'#darkpsychology #manipulation #emotionalintelligence #psychology #mindset #boundaries #silenttreatment #narcissist #reels #viral #fyp'},
+  {id:2,pillar:'power',title:'The 48 Laws Condensed to 3 Sentences',caption:'Robert Greene wrote 452 pages. I\'ll save you the time.\n\nLaw 1: Never outshine the master — let them feel superior.\nLaw 2: Use absence to create respect — availability breeds contempt.\nLaw 3: Say less than necessary — power grows in silence.\n\nThe person who saves this wins quietly.\nThe person who scrolls past loses.',tags:'#48lawsofpower #robertgreene #darkpsychology #power #influence #mindset #selfimprovement #strategy #reels #viral #fyp'},
+  {id:3,pillar:'social',title:'How to Read Anyone in 60 Seconds',caption:'The most powerful skill no one taught you in school.\n\nBody language experts use 5 micro-signals:\n1. Foot direction → who they actually want to talk to\n2. Eyebrow flash → genuine surprise lasts 0.2 seconds\n3. Lip compression → holding something back\n4. Nostril flare → arousal or disgust\n5. Eye block → they hate what you just said\n\nObserve. Know before they speak.',tags:'#bodylanaguage #darkpsychology #readpeople #psychology #socialskills #microexpressions #influence #reels #viral #fyp'},
+  {id:4,pillar:'psych',title:'Gaslighting: The Full Playbook Exposed',caption:'If someone ever said "you\'re too sensitive" — read this.\n\nGaslighting is a 4-stage process:\nStage 1: Disorientation\nStage 2: Isolation\nStage 3: Dependency\nStage 4: Control\n\nYou were never crazy. They just needed you to believe you were.\n\nShare this.',tags:'#gaslighting #darkpsychology #narcissist #toxicrelationships #manipulation #mentalhealth #awareness #reels #viral #fyp'},
+  {id:5,pillar:'power',title:'Never Explain Yourself to Anyone',caption:'The second you justify your decisions, you invite judgment.\n\nPowerful people don\'t explain.\n\n→ Insecurity → need for approval → weakness.\n\n"No" is a complete sentence.\n"I\'m busy" needs no justification.\n\nPractice this for 30 days.',tags:'#darkpsychology #power #mindset #selfdevelopment #mentalstrength #confidence #stoic #unbothered #reels #viral #fyp'},
+  {id:6,pillar:'psych',title:'Love Bombing: How It Starts, How It Ends',caption:'Too much affection, too fast = a red flag.\n\nLove bombing cycle: Idealize → Devalue → Discard → Repeat\n\nIf they put you on a pedestal at the start, know that pedestal was built to be kicked.\n\nTrust consistency over intensity.',tags:'#lovebombing #darkpsychology #narcissist #toxicrelationships #manipulation #redflags #emotionalabuse #reels #viral #fyp'},
+  {id:7,pillar:'social',title:'The Art of Strategic Silence',caption:'Most people fill silence. The powerful ones weaponize it.\n\n1. After a request — silence pressures compliance\n2. When angry — silence is more threatening than words\n3. In negotiations — first to speak loses\n\nWait 3 seconds. You\'ll be shocked what they volunteer.',tags:'#darkpsychology #silence #negotiation #power #socialskills #psychology #influence #strategy #reels #viral #fyp'},
+  {id:8,pillar:'power',title:'Why Weak People Talk About Others',caption:'Weak people discuss people.\nAverage people discuss events.\nGreat minds discuss ideas.\n\nEvery time you gossip you reveal your insecurities and waste mental bandwidth.\n\nProtect your mental real estate.',tags:'#darkpsychology #mindset #stoic #mentalstrength #selfimprovement #psychology #power #gossip #reels #viral #fyp'},
+  {id:9,pillar:'psych',title:'How Narcissists Choose Their Victims',caption:'They don\'t choose random targets. They choose specific ones.\n\nNarcissists target:\n→ Highly empathetic people\n→ People with unhealed childhood wounds\n→ Overachievers with impostor syndrome\n→ People who struggle to say no\n\nThey\'re attracted to your light — because they want to consume it.',tags:'#narcissist #darkpsychology #empath #toxicrelationships #manipulation #psychology #awareness #healing #reels #viral #fyp'},
+  {id:10,pillar:'social',title:'The Halo Effect: Why Pretty People Get More',caption:'Your brain is lying to you every single day.\n\nThe Halo Effect: attractive = assumed smart, kind, competent.\n\nWhy taller CEOs earn more. Why attractive defendants get lighter sentences.\n\nNow you know. Stop falling for it.',tags:'#haloeffect #darkpsychology #psychology #cognitivebias #socialskills #awareness #humanpsychology #reels #viral #fyp'},
+  {id:11,pillar:'psych',title:'DARVO: The Abuser\'s Defense Strategy',caption:'You confronted them. Somehow you ended up apologizing.\n\nDARVO: Deny, Attack, Reverse Victim and Offender\n\nDENY → ATTACK → REVERSE\n\nSuddenly it\'s about your "aggression."\n\nName it. It loses its power immediately.',tags:'#DARVO #darkpsychology #narcissist #manipulation #toxicrelationships #emotionalabuse #psychology #reels #viral #fyp'},
+  {id:12,pillar:'power',title:'The Law of Scarcity: Why Rare = Valuable',caption:'Make yourself less available. Watch everything change.\n\nScarcity increases perceived value:\n→ Your time\n→ Your opinions\n→ Your energy\n→ Your presence\n\nThe person who needs nothing gets everything.\nStop being infinite. Start being rare.',tags:'#darkpsychology #scarcity #power #mindset #influence #selfdevelopment #stoic #strategy #reels #viral #fyp'},
+  {id:13,pillar:'social',title:'Why Smart People Stay Quiet in Groups',caption:'The most intelligent person is usually saying the least.\n\n→ You can\'t learn while talking\n→ Words create enemies; silence creates options\n→ People who talk the most, reveal the most\n\nSun Tzu: "Appear weak when you are strong."',tags:'#darkpsychology #introverts #intelligence #mindset #strategy #socialskills #stoic #psychology #reels #viral #fyp'},
+  {id:14,pillar:'psych',title:'Intermittent Reinforcement: The Addiction Loop',caption:'Slot machines and toxic relationships use the same psychology.\n\nIntermittent Reinforcement: unpredictable rewards are MORE addictive than consistent ones.\n\nHot and cold behavior keeps you hooked.\n\nB.F. Skinner proved this in 1950. Your ex figured it out by accident.',tags:'#intermittentreinforcement #darkpsychology #psychology #toxicrelationships #manipulation #attachment #science #reels #viral #fyp'},
+  {id:15,pillar:'power',title:'The Machiavelli Power Moves (Condensed)',caption:'"Everyone sees what you appear to be, few feel what you are."\n\nMachiavelli wrote the operating manual for power 500 years ago.\n\n"It is better to be feared than loved, if you cannot be both."\n\nStudy it to defend against it.',tags:'#machiavelli #darkpsychology #power #strategy #history #psychology #influence #philosophy #reels #viral #fyp'},
+  {id:16,pillar:'social',title:'The Confidence Paradox',caption:'Confidence isn\'t a feeling. It\'s a behavior you perform until it becomes real.\n\nAmy Cuddy: 2 minutes of power poses → +20% testosterone, −25% cortisol.\n\n→ Shoulders back\n→ Speak 30% slower\n→ Hold eye contact 1 second longer\n\nDo it scared. You become it anyway.',tags:'#confidence #darkpsychology #psychology #bodylanguage #mindset #socialskills #selfdevelopment #science #reels #viral #fyp'},
+  {id:17,pillar:'psych',title:'The 5 Signs Someone Is Lying to You',caption:'Your instincts were right. Here\'s the science.\n\n1. Over-explaining without being asked\n2. Touching nose or covering mouth mid-sentence\n3. Speech suddenly slowing down\n4. Too much eye contact (overcorrecting)\n5. Feet pointing toward the exit\n\nLook for clusters. Save this.',tags:'#darkpsychology #bodylanaguage #lying #deception #psychology #readpeople #microexpressions #awareness #reels #viral #fyp'},
+  {id:18,pillar:'power',title:'Why Most People Stay Poor: Scarcity Mindset',caption:'It\'s not money they lack. It\'s the identity that creates money.\n\nScarcity mindset consumes 13 IQ points — equal to losing a night of sleep.\n\n→ Short-term focused\n→ Risk-averse\n→ Reactive\n\nChange the identity. The behavior follows.',tags:'#darkpsychology #mindset #scarcitymindset #abundance #psychology #wealth #selfdevelopment #mentalstrength #reels #viral #fyp'},
+  {id:19,pillar:'psych',title:'Triangulation: Why They Always Mention Other People',caption:'They mention "someone else" is interested. Suddenly you want them more. That\'s the point.\n\nTriangulation activates jealousy, shifts power, makes you compete for approval.\n\nAnytime someone makes you compete for them:\nWalk away.\n\nYou are a priority or you are nothing.',tags:'#triangulation #darkpsychology #narcissist #manipulation #toxicrelationships #psychology #relationships #boundaries #reels #viral #fyp'},
+  {id:20,pillar:'social',title:'The 10-Second Rule That Changes Everything',caption:'Before reacting to ANYTHING — wait 10 seconds.\n\n→ Amygdala stops hijacking prefrontal cortex\n→ Emotion → strategy\n→ Response becomes choice, not reflex\n\nUsed by Navy SEALs, hostage negotiators, poker players.\n\nCost: $0. Result: control in every situation.',tags:'#darkpsychology #emotionalintelligence #selfcontrol #psychology #mindset #strategy #neuroscience #stoic #reels #viral #fyp'},
+];
+const PC = {psych:'var(--lime)',power:'var(--pink)',social:'var(--blue)'};
+const PL = {psych:'Dark Psychology',power:'Power & Influence',social:'Social Dynamics'};
+
+// ══════════════════════════════════════════════════════════════
+// INDEXEDDB
+// ══════════════════════════════════════════════════════════════
+const IDB = (() => {
+  let db;
+  const init = () => new Promise((res,rej) => {
+    const r = indexedDB.open('dps_v3',1);
+    r.onupgradeneeded = e => e.target.result.createObjectStore('a',{keyPath:'k'});
+    r.onsuccess = e => { db=e.target.result; res(); };
+    r.onerror = () => rej(r.error);
+  });
+  const set = (k,v) => new Promise((res,rej) => {
+    const tx=db.transaction('a','readwrite'); tx.objectStore('a').put({k,v});
+    tx.oncomplete=res; tx.onerror=()=>rej(tx.error);
+  });
+  const get = k => new Promise((res,rej) => {
+    const tx=db.transaction('a','readonly'); const r=tx.objectStore('a').get(k);
+    r.onsuccess=()=>res(r.result?.v??null); r.onerror=()=>rej(r.error);
+  });
+  const del = k => new Promise(res => { const tx=db.transaction('a','readwrite'); tx.objectStore('a').delete(k); tx.oncomplete=res; });
+  const clear = () => new Promise(res => { const tx=db.transaction('a','readwrite'); tx.objectStore('a').clear(); tx.oncomplete=res; });
+  return {init,set,get,del,clear};
+})();
+
+// ══════════════════════════════════════════════════════════════
+// LOCALSTORAGE
+// ══════════════════════════════════════════════════════════════
+const LS = {
+  k: id => `dpsv3_${id}`,
+  save(id,d){ try{localStorage.setItem(this.k(id),JSON.stringify(d));}catch(e){} },
+  load(id){ try{return JSON.parse(localStorage.getItem(this.k(id)))??null;}catch(e){return null;} },
+  del(id){ localStorage.removeItem(this.k(id)); },
+  clearAll(){ Object.keys(localStorage).filter(k=>k.startsWith('dpsv3_')).forEach(k=>localStorage.removeItem(k)); }
+};
+
+function saveP(id) {
+  const pl = post(id).pipeline;
+  LS.save(id, {
+    stage: pl.stage, script: pl.script,
+    audioDuration: pl.audioDuration, hasAudio: !!pl.audioUrl,
+    timing: pl.timing,
+    mediaCount: pl.media.length,
+    hasMedia: pl.media.map(m => !!(m?.url||m?.video)),
+    mediaTypes: pl.media.map(m => m?.type||null),
+    hasVideo: !!pl.videoUrl,
+    log: pl.log.slice(-60)
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+const S = { tab:'library', filter:'all', activeId:null, posts:[], running:false, genNewBusy:false, logOpen:true };
+function post(id){ return S.posts.find(p=>p.id===id); }
+function setP(id,patch){ Object.assign(post(id).pipeline,patch); saveP(id); }
+
+// ══════════════════════════════════════════════════════════════
+// INIT + RESTORE
+// ══════════════════════════════════════════════════════════════
+async function init() {
+  await IDB.init();
+  S.posts = await Promise.all(POSTS.map(async p => {
+    const def = {stage:'idea',script:null,audioBlob:null,audioUrl:null,audioDuration:null,timing:null,media:[],videoUrl:null,log:[]};
+    const saved = LS.load(p.id);
+    const pl = {...def};
+    if (saved) {
+      Object.assign(pl, {
+        stage: saved.stage||'idea', script: saved.script||null,
+        audioDuration: saved.audioDuration||null, timing: saved.timing||null,
+        hasVideo: saved.hasVideo||false, log: saved.log||[]
+      });
+      // Restore media
+      if (saved.hasMedia?.length) {
+        pl.media = new Array(saved.mediaCount).fill(null);
+        for (let i=0; i<saved.mediaCount; i++) {
+          if (!saved.hasMedia[i]) continue;
+          try {
+            const stored = await IDB.get(`med_${p.id}_${i}`);
+            if (!stored) continue;
+            if (stored.type === 'image') {
+              pl.media[i] = {type:'image', url:stored.data, cached:true};
+            } else if (stored.type === 'video') {
+              const blob = b64Blob(stored.data, stored.mime||'video/mp4');
+              const url = URL.createObjectURL(blob);
+              const vid = mkVid(url);
+              pl.media[i] = {type:'video', video:vid, url, cached:true};
+            }
+          } catch(e){}
+        }
+      }
+      // Restore audio
+      if (saved.hasAudio) {
+        try {
+          const b = await IDB.get(`aud_${p.id}`);
+          if (b) { const blob=b64Blob(b,'audio/mpeg'); pl.audioBlob=blob; pl.audioUrl=URL.createObjectURL(blob); }
+        } catch(e){}
+      }
+    }
+    return {...p, pipeline:pl};
+  }));
+  renderAll();
+}
+
+function mkVid(src) {
+  const v=document.createElement('video'); v.src=src; v.loop=true; v.muted=true; v.playsInline=true; v.preload='auto'; return v;
+}
+
+// ══════════════════════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════════════════════
+function showTab(t) {
+  S.tab=t;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('on',p.id===`page-${t}`));
+  renderTab(t);
+}
+function renderAll(){ renderTab(S.tab); }
+function renderTab(t){ if(t==='library') renderLibrary(); else if(t==='studio') renderStudio(); else renderSetup(); }
+
+// ══════════════════════════════════════════════════════════════
+// LIBRARY
+// ══════════════════════════════════════════════════════════════
+function getStage(id) {
+  const pl=post(id)?.pipeline;
+  if(!pl) return 'idea';
+  if(pl.videoUrl) return 'done';
+  if(pl.media.some(m=>m?.url||m?.video)) return 'media';
+  if(pl.audioUrl) return 'voice';
+  if(pl.script) return 'script';
+  return 'idea';
+}
+
+function renderLibrary() {
+  const shown = S.filter==='all' ? S.posts : S.posts.filter(p=>p.pillar===S.filter);
+  const done = S.posts.filter(p=>p.pipeline.videoUrl).length;
+  const prog = S.posts.filter(p=>!p.pipeline.videoUrl&&p.pipeline.script).length;
+  const cards = shown.map(p => {
+    const st=getStage(p.id); const isDone=st==='done'; const inProg=st!=='idea';
+    return `<div class="card" onclick="openStudio(${p.id})">
+      <span class="c-num">#${p.id}</span>
+      <div class="c-pill" style="color:${PC[p.pillar]}">${PL[p.pillar]}</div>
+      <div class="c-title">${p.title}</div>
+      <div class="c-foot">
+        <span class="badge ${isDone?'b-done':inProg?'b-go':'b-q'}">${isDone?'✓ Ready':inProg?'⏳ '+st:'○ Queued'}</span>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('page-library').innerHTML = `
+<div class="ttl">Content <span style="color:var(--lime)">Library</span></div>
+<div class="sub">20 posts. Tap any to produce in Studio.</div>
+<div class="stats">
+  <div class="stat"><div class="stat-n" style="color:var(--lime)">${S.posts.length}</div><div class="stat-l">Total</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--green)">${done}</div><div class="stat-l">Ready</div></div>
+  <div class="stat"><div class="stat-n" style="color:var(--amber)">${prog}</div><div class="stat-l">In Progress</div></div>
+</div>
+<div class="filters">
+  ${['all','psych','power','social'].map(f=>`<button class="ftag ${S.filter===f?'on':''}" onclick="S.filter='${f}';renderLibrary()">${f==='all'?'All':PL[f]||f}</button>`).join('')}
+</div>
+<button class="btn btn-ghost btn-sm" style="width:100%;margin-bottom:12px" onclick="generateNewPost()" ${S.genNewBusy?'disabled':''}>
+  ${S.genNewBusy?'<span class="spin"></span> Generating…':'✦ Generate New Post (Claude AI)'}
+</button>
+${cards||'<div class="empty"><div class="empty-i">🔍</div>No posts.</div>'}`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// STUDIO
+// ══════════════════════════════════════════════════════════════
+function renderStudio() {
+  const el = document.getElementById('page-studio');
+  if (!S.activeId) { el.innerHTML='<div class="empty"><div class="empty-i">🎬</div>Select a post from Library to produce it here.</div>'; return; }
+  const p = post(S.activeId); const pl = p.pipeline;
+  const stage = getStage(S.activeId); const isDone = stage==='done';
+
+  // Estimate time
+  const secCount = pl.script?.sections?.length || 5;
+  const estMin = Math.ceil((5 + 10 + secCount*15 + (pl.audioDuration||40)) / 60);
+
+  // Steps HTML
+  const stepsHtml = buildSteps(p);
+
+  // Media strip
+  const mediaHtml = pl.media.length ? buildMediaStrip(pl) : '';
+
+  // Log panel
+  const logHtml = buildLogPanel(pl);
+
+  // Done panel
+  const doneHtml = isDone ? buildDonePanel(p) : '';
+
+  el.innerHTML = `
+<div class="st-back" onclick="showTab('library')">← Library</div>
+<div class="st-post">
+  <div class="st-pill" style="color:${PC[p.pillar]}">${PL[p.pillar]}</div>
+  <div class="st-title">${p.title}</div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span class="badge ${isDone?'b-done':stage!=='idea'?'b-go':'b-q'}">${isDone?'✓ Ready':stage!=='idea'?'⏳ '+stage:'○ Queued'}</span>
+    ${pl.script?`<span style="font-size:10px;color:var(--mu)">${pl.script.sections.length} sections · ~${(pl.script.sections[pl.script.sections.length-1]?.end||0).toFixed(0)}s</span>`:''}
+  </div>
+</div>
+
+${!isDone?`<button class="btn btn-lime" id="runBtn" onclick="runPipeline(${p.id})" ${S.running?'disabled':''}>
+  ${S.running?'<span class="spin"></span> Generating… (est. '+estMin+'m)':'🚀 Generate Full Reel — Auto'}
+</button>
+<div style="height:10px"></div>`:''}
+
+<div style="background:var(--c1);border:.5px solid var(--b1);border-radius:12px;padding:13px;margin-bottom:10px">
+  <div class="sec-hdr" style="margin-top:0">Pipeline</div>
+  <div class="steps">${stepsHtml}</div>
+</div>
+
+${logHtml}
+${mediaHtml}
+${doneHtml}
+
+${!isDone?`<div class="btn-row">
+  <button class="btn btn-ghost btn-sm" onclick="resetPost(${p.id})">↺ Reset Post</button>
+  ${pl.audioUrl&&!pl.videoUrl?`<button class="btn btn-ghost btn-sm" onclick="runAssemblyOnly(${p.id})">▶ Assemble Video Only</button>`:''}
+</div>`:''}`;
+}
+
+function buildSteps(p) {
+  const pl=p.pipeline;
+  const mediaOk=pl.media.length>0&&pl.media.every(m=>m?.url||m?.video);
+  const steps=[
+    {key:'script',label:'Script',
+     detail:pl.script?`${pl.script.sections.length} sections · ~${(pl.script.sections[pl.script.sections.length-1]?.end||0).toFixed(0)}s · ${(pl.script.text||pl.script.script||'').length} chars`:'Claude writes voiceover + decides image/video per section',
+     done:!!pl.script},
+    {key:'voice',label:'Voice (ElevenLabs)',
+     detail:pl.audioUrl?`✓ Adam · ${pl.audioDuration?.toFixed(1)||'?'}s`:'Adam voice · free tier',
+     done:!!pl.audioUrl},
+    {key:'media',label:'Images / Videos (Gemini)',
+     detail:mediaOk?`✓ ${pl.media.length} assets — ${pl.media.filter(m=>m?.type==='video').length} video, ${pl.media.filter(m=>m?.type==='image').length} image`:
+           pl.media.length?`${pl.media.filter(m=>m?.url||m?.video).length}/${pl.media.length} done`:'Dynamic mix — Claude decides type per section',
+     done:mediaOk},
+    {key:'video',label:'Video Assembly + Captions',
+     detail:pl.videoUrl?'✓ Captions burned in, ready to download':'Canvas recording with Ken Burns + auto-captions',
+     done:!!pl.videoUrl},
+  ];
+  return steps.map((s,i)=>{
+    const running=S.running&&S.currentStep===s.key;
+    const cls=s.done?'si-d':running?'si-r':'si-w';
+    const icon=s.done?'✓':running?`<span class="spin"></span>`:(i+1);
+    return `<div class="step" id="step-${s.key}">
+      <div class="si ${cls}">${icon}</div>
+      <div style="flex:1">
+        <div class="st-name">${s.label}</div>
+        <div class="st-det ${s.done?'ok':running?'info':''}" id="det-${s.key}">${s.detail}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildLogPanel(pl) {
+  const entries = pl.log.slice(-80);
+  const lines = entries.map(e=>`<div class="ll"><span class="llt">${e.ts}</span><span class="ll-${e.type}">${e.msg}</span></div>`).join('');
+  const open = S.logOpen;
+  return `<div class="logpanel">
+  <div class="logpanel-hdr" onclick="S.logOpen=!S.logOpen;renderStudio()">
+    <span class="lp-title">📡 Live Log (${entries.length} entries)</span>
+    <span class="lp-toggle">${open?'▲ collapse':'▼ expand'}</span>
+  </div>
+  <div class="loglines ${open?'':'collapsed'}" id="loglines">${lines||'<span style="color:var(--di)">Pipeline not started yet.</span>'}</div>
+</div>`;
+}
+
+function buildMediaStrip(pl) {
+  const thumbs = pl.media.map((m,i)=>{
+    const ok=m?.url||m?.video; const isVid=m?.type==='video';
+    return `<div class="mthumb ${ok?(isVid?'vid':'ok'):''}">
+      ${m?.url?`<img src="${m.url}">`:''}
+      ${m?.video?`<video src="${m.video.src||''}" muted loop playsinline style="width:100%;height:100%;object-fit:cover"></video>`:''}
+      ${!ok&&!m?.loading?`<span style="font-size:14px;color:var(--di)">-</span>`:''}
+      ${m?.loading?`<div class="spin"></div>`:''}
+      ${ok?`<span class="mt-type ${isVid?'mt-vid':'mt-img'}">${isVid?'VID':'IMG'}</span>`:''}
+      ${m?.cached?`<span class="mt-cache" style="top:14px">💾</span>`:''}
+      <div class="mt-n">${i+1}</div>
+    </div>`;
+  }).join('');
+  return `<div style="background:var(--c1);border:.5px solid var(--b1);border-radius:12px;padding:13px;margin-bottom:10px">
+  <div class="sec-hdr" style="margin-top:0">Visual Assets</div>
+  <div class="mstrip">${thumbs}</div>
+</div>`;
+}
+
+function buildDonePanel(p) {
+  const pl=p.pipeline;
+  return `<div class="done-card">
+  <div class="done-title">🎉 Reel Ready</div>
+  <div class="done-sub">Download → add to Instagram with caption below.</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <a class="btn btn-green" href="${pl.videoUrl}" download="post${p.id}_dark_psych.webm" style="text-decoration:none;flex:1;justify-content:center">⬇ Download</a>
+    <button class="btn btn-ghost" onclick="previewVideo(${p.id})" style="flex:1">▶ Preview</button>
+    ${typeof navigator.share!=='undefined'?`<button class="btn btn-ghost btn-xs" onclick="shareVideo(${p.id})">📤 Share</button>`:''}
+  </div>
+</div>
+<div style="background:var(--c1);border:.5px solid var(--b1);border-radius:12px;padding:13px;margin-bottom:10px">
+  <div class="cp-row"><span class="cp-lbl">Caption</span><button class="cp-btn" onclick="cpText(${p.id},'caption')">Copy</button></div>
+  <div class="tbox">${p.caption}</div>
+  <div class="cp-row"><span class="cp-lbl">Hashtags → paste in first comment</span><button class="cp-btn" onclick="cpText(${p.id},'tags')">Copy</button></div>
+  <div class="tags-ln">${p.tags}</div>
+  ${pl.script?`<div class="cp-row" style="margin-top:8px"><span class="cp-lbl">Script</span><button class="cp-btn" onclick="cpText(${p.id},'script')">Copy</button></div>
+  <div class="tbox">${pl.script.text||pl.script.script||''}</div>`:''}
+</div>
+${buildMediaStrip(pl)}
+<div class="tips">
+  <div class="tip"><div class="tip-icon">⏰</div><div>Best posting times: <strong>7–9am</strong> or <strong>7–10pm</strong> in your audience's timezone</div></div>
+  <div class="tip"><div class="tip-icon">💬</div><div>Engage with every comment in the <strong>first 60 minutes</strong> — it signals quality to the algorithm</div></div>
+  <div class="tip"><div class="tip-icon">#️⃣</div><div>Put <strong>3-5 hashtags in caption</strong>, the rest in the <strong>first comment</strong></div></div>
+  <div class="tip"><div class="tip-icon">📱</div><div>Convert .webm → .mp4 free at <strong>cloudconvert.com</strong> before posting</div></div>
+</div>
+<div style="height:10px"></div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// PIPELINE ORCHESTRATION
+// ══════════════════════════════════════════════════════════════
+S.currentStep = null;
+
+async function runPipeline(id) {
+  if (S.running) return;
+  S.running=true; S.currentStep=null;
+  post(id).pipeline.log = []; // fresh log per run
+  setProgress(0); renderStudio();
+
+  try {
+    const p=post(id); let pl=p.pipeline;
+    // STEP 1 — Script
+    if (!pl.script) {
+      S.currentStep='script';
+      stepState('script','running','Claude is writing the script…');
+      addLog(id,'Claude: generating voiceover + content strategy…','info');
+      const script = await apiClaude(id, p);
+      setP(id,{script,stage:'script'});
+      addLog(id,`✓ Script: ${script.sections.length} sections · ~${script.sections[script.sections.length-1].end.toFixed(0)}s · ${script.text.length} chars`,'ok');
+      stepState('script','done',`${script.sections.length} sections · ~${script.sections[script.sections.length-1].end.toFixed(0)}s`);
+      const vids=script.sections.filter(s=>s.contentType==='video').length;
+      const imgs=script.sections.filter(s=>s.contentType==='image').length;
+      addLog(id,`Content plan: ${imgs} images + ${vids} video clips`,'info');
+    } else {
+      stepState('script','done',`${pl.script.sections.length} sections (cached)`);
+    }
+    setProgress(20); pl=post(id).pipeline;
+
+    // STEP 2 — Voice
+    if (!pl.audioUrl) {
+      S.currentStep='voice';
+      stepState('voice','running','ElevenLabs: generating Adam voice…');
+      const voiceText = pl.script.text || pl.script.script || '';
+      addLog(id,`ElevenLabs: sending ${voiceText.length} chars…`,'info');
+      const {blob,url,dur} = await apiElevenLabs(voiceText);
+      const b64=await blobToB64(blob); await IDB.set(`aud_${id}`,b64);
+      const timing=refineTiming(pl.script.sections, dur);
+      setP(id,{audioBlob:blob,audioUrl:url,audioDuration:dur,timing,stage:'voice'});
+      addLog(id,`✓ Voice: ${dur.toFixed(1)}s · saved to storage`,'ok');
+      stepState('voice','done',`✓ Adam · ${dur.toFixed(1)}s`);
+    } else {
+      stepState('voice','done',`${pl.audioDuration?.toFixed(1)||'?'}s (cached)`);
+    }
+    setProgress(40); pl=post(id).pipeline;
+
+    // STEP 3 — Media (images + video clips)
+    const sections=pl.script.sections;
+    const existing=post(id).pipeline.media;
+    const needsMedia=existing.length===0||existing.some(m=>!m?.url&&!m?.video);
+    if (needsMedia) {
+      S.currentStep='media';
+      const media=new Array(sections.length).fill(null);
+      setP(id,{media});
+      for (let i=0; i<sections.length; i++) {
+        const sec=sections[i];
+        const typeLabel=sec.contentType==='video'?'🎞 Video clip':'🖼 Image';
+        addLog(id,`Gemini: ${typeLabel} ${i+1}/${sections.length} — ${sec.label}…`,'info');
+        stepState('media','running',`${typeLabel} ${i+1}/${sections.length}: ${sec.label}…`);
+        try {
+          let mitem;
+          if (sec.contentType==='video') {
+            mitem = await apiGeminiVideo(sec.prompt, sec.videoDuration||5);
+          } else {
+            mitem = await apiGeminiImage(sec.prompt);
+          }
+          await IDB.set(`med_${id}_${i}`, {type:mitem.type, data:mitem.data, mime:mitem.mime});
+          const media2=post(id).pipeline.media.slice();
+          media2[i]=mitem; setP(id,{media:media2});
+          refreshMediaStrip(id);
+          addLog(id,`✓ ${typeLabel} ${i+1} saved`,'ok');
+        } catch(e) {
+          addLog(id,`⚠ ${typeLabel} ${i+1} failed: ${e.message} — using image fallback`,'warn');
+          // fallback: image
+          try {
+            const mitem2=await apiGeminiImage(sec.prompt);
+            await IDB.set(`med_${id}_${i}`,{type:'image',data:mitem2.data});
+            const media3=post(id).pipeline.media.slice();
+            media3[i]=mitem2; setP(id,{media:media3});
+            refreshMediaStrip(id);
+            addLog(id,`✓ Fallback image ${i+1} saved`,'ok');
+          } catch(e2) {
+            const media3=post(id).pipeline.media.slice();
+            media3[i]={type:'image',url:null,error:true}; setP(id,{media:media3});
+            addLog(id,`✗ Media ${i+1} completely failed: ${e2.message}`,'err');
+          }
+        }
+        setProgress(40+Math.round((i+1)/sections.length*35));
+      }
+      const okCount=post(id).pipeline.media.filter(m=>m?.url||m?.video).length;
+      stepState('media','done',`✓ ${okCount}/${sections.length} assets ready`);
+    } else {
+      const v=existing.filter(m=>m?.type==='video').length; const im=existing.filter(m=>m?.type==='image').length;
+      stepState('media','done',`${im} images + ${v} video clips (cached)`);
+    }
+    setProgress(75); pl=post(id).pipeline;
+
+    // STEP 4 — Assemble
+    S.currentStep='video';
+    stepState('video','running','Recording canvas with Ken Burns + captions…');
+    addLog(id,'Canvas: assembling video with animated captions…','info');
+    const videoUrl = await assembleVideo(id, post(id).pipeline);
+    setP(id,{videoUrl,stage:'done'});
+    addLog(id,'✓ Video assembled and ready to download!','ok');
+    stepState('video','done','✓ Ready to download');
+    setProgress(100);
+
+  } catch(e) {
+    addLog(S.activeId||0, '✗ Pipeline error: '+e.message, 'err');
+    stepState(S.currentStep||'script','error','Error: '+e.message);
+    setProgress(0);
+  }
+  S.running=false; S.currentStep=null;
+  renderStudio();
+}
+
+async function runAssemblyOnly(id) {
+  if(S.running) return;
+  S.running=true; S.currentStep='video';
+  addLog(id,'Canvas: re-assembling video…','info');
+  stepState('video','running','Recording canvas…');
+  try {
+    const videoUrl=await assembleVideo(id,post(id).pipeline);
+    setP(id,{videoUrl,stage:'done'});
+    addLog(id,'✓ Video ready!','ok');
+    stepState('video','done','✓ Ready');
+  } catch(e) { addLog(id,'✗ '+e.message,'err'); }
+  S.running=false; S.currentStep=null; renderStudio();
+}
+
+// ══════════════════════════════════════════════════════════════
+// LOG HELPERS
+// ══════════════════════════════════════════════════════════════
+function addLog(id, msg, type='info') {
+  const ts = new Date().toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const p=post(id); if(p) p.pipeline.log.push({ts,msg,type});
+  const ll=document.getElementById('loglines');
+  if(ll){
+    const div=document.createElement('div'); div.className='ll';
+    div.innerHTML=`<span class="llt">${ts}</span><span class="ll-${type}">${escHtml(msg)}</span>`;
+    ll.appendChild(div); ll.scrollTop=ll.scrollHeight;
+  }
+}
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function stepState(key, state, detail) {
+  const el=document.getElementById(`step-${key}`); if(!el) return;
+  const si=el.querySelector('.si');
+  const det=el.querySelector(`#det-${key}`);
+  if(si){ si.className=`si ${state==='done'?'si-d':state==='running'?'si-r':state==='error'?'si-e':'si-w'}`; si.innerHTML=state==='done'?'✓':state==='running'?`<span class="spin"></span>`:state==='error'?'✗':''; }
+  if(det){ det.textContent=detail; det.className=`st-det ${state==='done'?'ok':state==='error'?'err':state==='running'?'info':''}`; }
+}
+
+function setProgress(pct) {
+  const el=document.getElementById('globalProg'); if(el) el.style.width=pct+'%';
+}
+
+function refreshMediaStrip(id) {
+  const pl=post(id).pipeline;
+  const strip=document.querySelector('.mstrip'); if(!strip) return;
+  strip.innerHTML=pl.media.map((m,i)=>{
+    const ok=m?.url||m?.video; const isVid=m?.type==='video';
+    return `<div class="mthumb ${ok?(isVid?'vid':'ok'):''}">
+      ${m?.url?`<img src="${m.url}">`:''}
+      ${m?.video?`<video src="${m.video.src||''}" muted loop playsinline style="width:100%;height:100%;object-fit:cover"></video>`:''}
+      ${ok?`<span class="mt-type ${isVid?'mt-vid':'mt-img'}">${isVid?'VID':'IMG'}</span>`:''}
+      <div class="mt-n">${i+1}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+// CLAUDE API — script + content strategy
+// ══════════════════════════════════════════════════════════════
+async function apiClaude(id, p) {
+  const r = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':KEYS.claude,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body: JSON.stringify({
+      model:'claude-sonnet-4-6', max_tokens:1400,
+      messages:[{role:'user',content:`You are producing a viral dark psychology Instagram Reel.
+
+POST TITLE: ${p.title}
+POST CAPTION: ${p.caption}
+
+Design the optimal visual content strategy for a 35–45 second Reel:
+
+1. Write a voiceover script (80–100 words total)
+2. Divide into 4–7 sections based on natural speech breaks
+3. For EACH section decide:
+   - contentType: "image" (still with motion effect) or "video" (Veo2 moving clip)
+   - Use "video" only for 1–2 sections MAX at the most cinematic moments
+   - kenburnStyle (for images): "zoom-in" | "zoom-out" | "pan-left" | "pan-right" | "drift"
+   - A specific Gemini Imagen/Veo prompt — dark, cinematic, 9:16, photorealistic, no text
+
+VIDEO sections: scenes with physical motion (door closing, person walking, smoke, water, fire, hands moving)
+IMAGE sections: portraits, concepts, close-ups, abstract psychology metaphors
+
+Return ONLY valid JSON (no markdown, no extra text):
+{"script":"full text","sections":[{"label":"Hook","text":"1-2 sentences","estimatedDuration":7,"contentType":"image","kenburnStyle":"zoom-in","prompt":"detailed visual description...","videoDuration":5}]}`}]
+    })
+  });
+  if (!r.ok) throw new Error(`Claude ${r.status}`);
+  const d=await r.json();
+  const raw=d.content.map(b=>b.text||'').join('');
+  const data=JSON.parse(raw.replace(/```json|```/g,'').trim());
+  // Normalize: Claude may return "script" or "text" as the voiceover key
+  if (!data.text && data.script) data.text = data.script;
+  if (!data.text) data.text = data.sections?.map(s=>s.text).join(' ') || '';
+  let t=0; data.sections=data.sections.map(s=>{const st=t;t+=s.estimatedDuration;return{...s,start:st,end:t};});
+  return data;
+}
+
+async function generateNewPost() {
+  if (S.genNewBusy) return;
+  S.genNewBusy=true; renderLibrary();
+  try {
+    const existing=S.posts.map(p=>p.title).join(', ');
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':KEYS.claude,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:900,messages:[{role:'user',content:`Dark psychology Instagram @mindmanipulated. Create ONE new viral post (different from: ${existing}).
+Return ONLY valid JSON: {"pillar":"psych|power|social","title":"punchy title","caption":"~150 word caption with hook+bullets+CTA","tags":"15 hashtags"}`}]})
+    });
+    const d=await r.json(); const raw=d.content.map(b=>b.text||'').join('');
+    const data=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    const nid=Math.max(...S.posts.map(p=>p.id))+1;
+    S.posts.push({...data,id:nid,pipeline:{stage:'idea',script:null,audioBlob:null,audioUrl:null,audioDuration:null,timing:null,media:[],videoUrl:null,log:[]}});
+    toast(`✓ New: "${data.title}"`);
+  } catch(e){ toast('Failed: '+e.message); }
+  S.genNewBusy=false; renderLibrary();
+}
+
+// ══════════════════════════════════════════════════════════════
+// ELEVENLABS — voice
+// ══════════════════════════════════════════════════════════════
+async function apiElevenLabs(text) {
+  const r=await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${EL_VOICE}`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','xi-api-key':KEYS.elevenlabs},
+    body:JSON.stringify({text,model_id:'eleven_multilingual_v2',voice_settings:{stability:0.65,similarity_boost:0.75,style:0.3,use_speaker_boost:true}})
+  });
+  if (!r.ok) throw new Error(`ElevenLabs ${r.status}: ${await r.text()}`);
+  const blob=await r.blob();
+  const url=URL.createObjectURL(blob);
+  const dur=await audioDuration(url);
+  return {blob,url,dur};
+}
+function audioDuration(url){ return new Promise(res=>{ const a=new Audio(url); a.onloadedmetadata=()=>res(a.duration); a.onerror=()=>res(40); }); }
+function refineTiming(sections,dur){ const est=sections[sections.length-1]?.end||1; const sc=dur/est; return sections.map(s=>({...s,start:s.start*sc,end:s.end*sc})); }
+
+// ══════════════════════════════════════════════════════════════
+// GEMINI — images
+// ══════════════════════════════════════════════════════════════
+async function apiGeminiImage(prompt) {
+  const full = prompt+'. '+IMG_STYLE;
+  // Detect OAuth/bearer token format (AQ. or ya29. prefix)
+  const isBearer = KEYS.gemini.startsWith('AQ.') || KEYS.gemini.startsWith('ya29.');
+
+  async function gPost(endpoint, body) {
+    const url = isBearer
+      ? 'https://generativelanguage.googleapis.com/v1beta/models/'+endpoint
+      : 'https://generativelanguage.googleapis.com/v1beta/models/'+endpoint+'?key='+KEYS.gemini;
+    const headers = {'Content-Type':'application/json'};
+    if (isBearer) headers['Authorization'] = 'Bearer '+KEYS.gemini;
+    const r = await fetch(url, {method:'POST', headers, body:JSON.stringify(body)});
+    if (!r.ok) {
+      let msg = r.status+'';
+      try { const j=await r.json(); msg = j.error?.message || j.message || msg; } catch(e){}
+      throw new Error(msg);
+    }
+    return r.json();
+  }
+
+  // Try Imagen 3
+  try {
+    const d = await gPost('imagen-3.0-generate-001:predict',
+      {instances:[{prompt:full}],parameters:{sampleCount:1,aspectRatio:'9:16',safetyFilterLevel:'block_few'}});
+    const b64=d.predictions?.[0]?.bytesBase64Encoded;
+    if (b64) { const u='data:image/jpeg;base64,'+b64; return {type:'image',url:u,data:u}; }
+  } catch(e) { addLog(S.activeId,'Imagen3: '+e.message,'warn'); }
+
+  // Fallback: Gemini 2.0 Flash image generation
+  try {
+    const d2 = await gPost('gemini-2.0-flash-preview-image-generation:generateContent',
+      {contents:[{parts:[{text:full}]}],generationConfig:{responseModalities:['IMAGE'],responseMimeType:'image/jpeg'}});
+    const b64=d2.candidates?.[0]?.content?.parts?.find(x=>x.inlineData)?.inlineData?.data;
+    if (b64) { const u='data:image/jpeg;base64,'+b64; return {type:'image',url:u,data:u}; }
+    throw new Error('No image data in response');
+  } catch(e) { addLog(S.activeId,'Flash-img: '+e.message,'warn'); throw new Error(e.message); }
+}
+
+// ══════════════════════════════════════════════════════════════
+// GEMINI — video (Veo 2) with Imagen fallback
+// ══════════════════════════════════════════════════════════════
+async function apiGeminiVideo(prompt, durationSeconds=5) {
+  const full = prompt+'. Cinematic vertical 9:16, dark moody atmosphere, dramatic motion, photorealistic, no text';
+  // Try Veo 2
+  try {
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/veo-2.0-generate-001:predictLongRunning?key=${KEYS.gemini}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({instances:[{prompt:full}],parameters:{aspectRatio:'9:16',durationSeconds,sampleCount:1,personGeneration:'dont_allow'}})
+    });
+    if (!r.ok) {
+      let msg = r.status+'';
+      try { const j=await r.clone().json(); msg=j.error?.message||msg; } catch(e){}
+      throw new Error('Veo2 create: '+msg);
+    }
+    const op=await r.json();
+    if (!op.name) throw new Error('No operation name');
+    // Poll (max 90s)
+    for (let i=0;i<30;i++) {
+      await sleep(3000);
+      const pr=await fetch(`https://generativelanguage.googleapis.com/v1beta/${op.name}?key=${KEYS.gemini}`);
+      const pd=await pr.json();
+      if (pd.done) {
+        const samples=pd.response?.generateVideoResponse?.generatedSamples;
+        if (!samples?.length) throw new Error('No video samples');
+        const uri=samples[0].video?.uri;
+        if (!uri) throw new Error('No video URI');
+        const vr=await fetch(`${uri}&key=${KEYS.gemini}`);
+        if (!vr.ok) throw new Error(`Video download ${vr.status}`);
+        const blob=await vr.blob();
+        const b64=await blobToB64(blob);
+        const url=URL.createObjectURL(blob);
+        const vid=mkVid(url);
+        return {type:'video', video:vid, url, data:b64, mime:blob.type||'video/mp4'};
+      }
+    }
+    throw new Error('Veo2 timeout');
+  } catch(e) {
+    // Veo2 failed → use Imagen with Ken Burns (treated as "video-like" image)
+    addLog(S.activeId, `Veo2 unavailable (${e.message}) — using Imagen+KenBurns`, 'warn');
+    const imgItem = await apiGeminiImage(prompt);
+    return imgItem; // returns as image, Ken Burns will animate it
+  }
+}
+
+function sleep(ms){ return new Promise(res=>setTimeout(res,ms)); }
+
+// ══════════════════════════════════════════════════════════════
+// VIDEO ASSEMBLY — canvas + Ken Burns + captions + MediaRecorder
+// ══════════════════════════════════════════════════════════════
+async function assembleVideo(id, pl) {
+  const timing  = pl.timing || pl.script.sections;
+  const total   = pl.audioDuration || timing[timing.length-1].end+1;
+  const canvas  = document.getElementById('offscreen');
+  const ctx     = canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+
+  // Preload all media elements
+  const media = await Promise.all(pl.media.map(async m => {
+    if (!m) return null;
+    if (m.type==='video' && m.video) { await m.video.load?.(); return m; }
+    if (m.type==='image' && m.url) {
+      return new Promise(res=>{ const img=new Image(); img.onload=()=>res({...m,img}); img.onerror=()=>res(null); img.src=m.url; });
+    }
+    return null;
+  }));
+
+  const mime = ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4',''].find(m=>m===''||MediaRecorder.isTypeSupported(m));
+
+  return new Promise(async (resolve,reject) => {
+    try {
+      const actx=new AudioContext();
+      const ab=await pl.audioBlob.arrayBuffer();
+      const dec=await actx.decodeAudioData(ab);
+      const src=actx.createBufferSource(); src.buffer=dec;
+      const dest=actx.createMediaStreamDestination();
+      src.connect(dest); src.connect(actx.destination);
+
+      const vStream=canvas.captureStream(30);
+      const combined=new MediaStream([...vStream.getVideoTracks(),...dest.stream.getAudioTracks()]);
+      const opts=mime?{mimeType:mime,videoBitsPerSecond:5000000}:{videoBitsPerSecond:5000000};
+      const rec=new MediaRecorder(combined,opts);
+      const chunks=[]; rec.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
+      rec.onstop=()=>{ const blob=new Blob(chunks,{type:mime||'video/webm'}); actx.close(); resolve(URL.createObjectURL(blob)); };
+
+      // Start any video elements
+      media.forEach(m=>{ if(m?.type==='video'&&m?.video){ m.video.currentTime=0; } });
+
+      rec.start(100); src.start();
+      const t0=performance.now();
+      let lastSec=-1;
+
+      function tick() {
+        const t=(performance.now()-t0)/1000;
+        const curSec=Math.floor(t);
+        drawFrame(ctx, media, timing, pl.script.sections, t, total, W, H);
+        // Sync video elements
+        media.forEach((m,i)=>{
+          if(m?.type==='video'&&m?.video){
+            const seg=timing[i]; if(!seg) return;
+            if(t>=seg.start&&t<seg.end){ if(m.video.paused) m.video.play().catch(()=>{}); }
+            else { if(!m.video.paused) m.video.pause(); }
+          }
+        });
+        if(t<total+0.3) requestAnimationFrame(tick); else rec.stop();
+      }
+      tick();
+    } catch(e){ reject(e); }
+  });
+}
+
+function drawFrame(ctx, media, timing, sections, t, total, W, H) {
+  let cur=0;
+  for (let i=timing.length-1;i>=0;i--){ if(t>=timing[i].start){cur=i;break;} }
+  const next=Math.min(cur+1,timing.length-1);
+  const segStart=timing[cur].start, segEnd=timing[cur].end||total;
+  const sectionT=t-segStart, sectionDur=segEnd-segStart;
+  const fadeStart=segEnd-FADE_DUR;
+  const style=sections[cur]?.kenburnStyle||'zoom-in';
+
+  ctx.fillStyle='#080808'; ctx.fillRect(0,0,W,H);
+  const m=media[cur];
+  if (m) {
+    ctx.globalAlpha=1;
+    if (m.type==='video'&&m.video&&m.video.readyState>=2) fillImg(ctx,m.video,W,H);
+    else if (m.img) drawKenBurns(ctx,m.img,W,H,sectionT,sectionDur,style);
+    else if (m.url&&m.type==='image'){ /* loading */ }
+  }
+
+  // Crossfade
+  if (t>=fadeStart&&cur!==next&&media[next]) {
+    ctx.globalAlpha=Math.min((t-fadeStart)/FADE_DUR,1);
+    const nm=media[next];
+    if (nm?.type==='video'&&nm?.video&&nm.video.readyState>=2) fillImg(ctx,nm.video,W,H);
+    else if (nm?.img) drawKenBurns(ctx,nm.img,W,H,0,sectionDur,sections[next]?.kenburnStyle||'zoom-in');
+    ctx.globalAlpha=1;
+  }
+
+  // Caption
+  if (sections[cur]?.text) drawCaption(ctx, sections[cur].text, W, H);
+}
+
+function drawKenBurns(ctx, img, W, H, secT, secDur, style) {
+  const p=Math.min(secT/Math.max(secDur,0.1),1);
+  let sc=Math.max(W/img.naturalWidth,H/img.naturalHeight);
+  let tx=(W-img.naturalWidth*sc)/2, ty=(H-img.naturalHeight*sc)/2;
+  switch(style){
+    case 'zoom-in':  sc*=1+p*0.07; tx=(W-img.naturalWidth*sc)/2; ty=(H-img.naturalHeight*sc)/2; break;
+    case 'zoom-out': sc*=(1.07-p*0.07); tx=(W-img.naturalWidth*sc)/2; ty=(H-img.naturalHeight*sc)/2; break;
+    case 'pan-left': sc*=1.05; tx=(W-img.naturalWidth*sc)/2-p*W*0.03; ty=(H-img.naturalHeight*sc)/2; break;
+    case 'pan-right':sc*=1.05; tx=(W-img.naturalWidth*sc)/2+p*W*0.03; ty=(H-img.naturalHeight*sc)/2; break;
+    case 'drift':    sc*=1.04; tx=(W-img.naturalWidth*sc)/2; ty=(H-img.naturalHeight*sc)/2-p*H*0.025; break;
+  }
+  ctx.drawImage(img,tx,ty,img.naturalWidth*sc,img.naturalHeight*sc);
+}
+
+function fillImg(ctx,src,W,H){
+  const iw=src.videoWidth||src.naturalWidth||W, ih=src.videoHeight||src.naturalHeight||H;
+  const sc=Math.max(W/iw,H/ih);
+  ctx.drawImage(src,(W-iw*sc)/2,(H-ih*sc)/2,iw*sc,ih*sc);
+}
+
+function drawCaption(ctx, text, W, H) {
+  const fs=Math.round(W*0.052);
+  ctx.font=`700 ${fs}px -apple-system,sans-serif`;
+  ctx.textAlign='center'; ctx.textBaseline='bottom';
+  const maxW=W*0.84;
+  const lines=wrapText(ctx,text,maxW);
+  const lh=fs*1.35; const pv=14, ph=16;
+  const bh=lines.length*lh+pv*2; const by=H*0.975-bh;
+  ctx.fillStyle='rgba(0,0,0,0.7)';
+  rRect(ctx,(W-maxW-ph*2)/2,by,maxW+ph*2,bh,10); ctx.fill();
+  ctx.fillStyle='#ffffff'; ctx.shadowColor='rgba(0,0,0,.85)'; ctx.shadowBlur=5;
+  lines.forEach((ln,i)=>ctx.fillText(ln,W/2,by+pv+(i+1)*lh-2));
+  ctx.shadowBlur=0;
+}
+
+function wrapText(ctx,text,maxW){
+  const words=text.split(' '); const lines=[]; let cur='';
+  for(const w of words){ const t=cur?cur+' '+w:w; if(ctx.measureText(t).width>maxW&&cur){lines.push(cur);cur=w;}else cur=t; }
+  if(cur) lines.push(cur); return lines;
+}
+function rRect(ctx,x,y,w,h,r){
+  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r); ctx.lineTo(x+r,y+h);
+  ctx.arcTo(x,y+h,x,y+h-r,r); ctx.lineTo(x,y+r); ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
+}
+
+// ══════════════════════════════════════════════════════════════
+// SETUP
+// ══════════════════════════════════════════════════════════════
+function renderSetup() {
+  document.getElementById('page-setup').innerHTML=`
+<div class="ttl">Setup</div>
+<div class="sub">Keys are hardcoded in the KEYS object at the top of the HTML file.</div>
+<div class="al-ok alert">✓ All 3 API keys loaded: Claude, Gemini, ElevenLabs</div>
+<div class="sec-hdr">📱 Get this app on your iPhone</div>
+<div style="background:var(--c1);border:.5px solid var(--b1);border-radius:12px;padding:13px;margin-bottom:12px;font-size:12px;line-height:1.9;color:var(--mu)">
+  <strong style="color:var(--tx)">Option A — Tiiny.host (30 seconds, easiest)</strong><br>
+  Go to <strong style="color:var(--blue)">tiiny.host</strong> → drag this file → get URL → open on iPhone<br>
+  → tap Share → <strong style="color:var(--tx)">Add to Home Screen</strong> → works like a native app<br><br>
+  <strong style="color:var(--tx)">Option B — GitHub Pages (free forever)</strong><br>
+  Create repo → upload as <code>index.html</code> → Settings → Pages → enable<br><br>
+  <strong style="color:var(--tx)">Option C — Netlify Drop (1 minute)</strong><br>
+  Go to <strong style="color:var(--blue)">netlify.com/drop</strong> → drag file → instant URL
+</div>
+<div class="sec-hdr">🎞 How smart content works</div>
+<div style="background:var(--c1);border:.5px solid var(--b1);border-radius:12px;padding:13px;margin-bottom:12px;font-size:12px;line-height:1.7;color:var(--mu)">
+  <strong style="color:var(--tx)">Claude</strong> reads each post and decides: how many sections (4–7), which sections get a <em>static image</em> vs a <em>Veo2 video clip</em>, and which Ken Burns motion effect (zoom-in, zoom-out, pan, drift).<br><br>
+  <strong style="color:var(--tx)">Images</strong> get a cinematic Ken Burns motion effect during recording.<br>
+  <strong style="color:var(--tx)">Video clips</strong> use Google Veo 2 — if unavailable, falls back to an image with Ken Burns.<br>
+  All sections get <strong style="color:var(--tx)">captions burned directly into the video</strong>.
+</div>
+<div class="sec-hdr">🆓 Free Tier</div>
+<div style="background:var(--c1);border:.5px solid var(--b1);border-radius:12px;padding:13px;margin-bottom:12px;font-size:12px;line-height:1.9;color:var(--mu)">
+  🟢 <strong style="color:var(--tx)">Claude API</strong> — ~$0.003/script<br>
+  🟢 <strong style="color:var(--tx)">Gemini Imagen 3</strong> — 1,500 images/day free<br>
+  🟡 <strong style="color:var(--tx)">ElevenLabs</strong> — 10,000 chars/month (~30 posts)<br>
+  🟢 <strong style="color:var(--tx)">Gemini Veo 2</strong> — limited free quota on AI Studio
+</div>
+<button class="btn-red" style="width:100%" onclick="confirmClear()">🗑 Clear All Saved Data</button>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// MISC HELPERS
+// ══════════════════════════════════════════════════════════════
+function openStudio(id){ S.activeId=id; showTab('studio'); }
+
+function cpText(id, field) {
+  const p=post(id);
+  const t=field==='caption'?p.caption:field==='tags'?p.tags:field==='script'?(p.pipeline.script?.text||p.pipeline.script?.script||''):'';
+  navigator.clipboard?.writeText(t).then(()=>toast('Copied ✓')).catch(()=>{
+    const ta=document.createElement('textarea'); ta.value=t; ta.style.cssText='position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); toast('Copied ✓');
+  });
+}
+
+function previewVideo(id) {
+  const pl=post(id).pipeline; if(!pl.videoUrl) return;
+  const v=document.createElement('video');
+  v.src=pl.videoUrl; v.controls=true; v.autoplay=true; v.playsInline=true;
+  v.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:9998;object-fit:contain';
+  const btn=document.createElement('button');
+  btn.textContent='✕ Close'; btn.style.cssText='position:fixed;top:14px;right:14px;z-index:9999;background:rgba(0,0,0,.8);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:14px;cursor:pointer';
+  btn.onclick=()=>{v.remove();btn.remove();};
+  document.body.appendChild(v); document.body.appendChild(btn);
+}
+
+async function shareVideo(id) {
+  const pl=post(id).pipeline; if(!pl.videoUrl) return;
+  try {
+    const r=await fetch(pl.videoUrl); const blob=await r.blob();
+    const file=new File([blob],'reel.webm',{type:blob.type});
+    await navigator.share({files:[file],title:post(id).title,text:post(id).caption});
+  } catch(e){ toast('Share failed: '+e.message); }
+}
+
+async function resetPost(id) {
+  if(!confirm('Reset this post?')) return;
+  const pl=post(id).pipeline; const count=pl.media.length;
+  for(let i=0;i<count;i++) await IDB.del(`med_${id}_${i}`);
+  await IDB.del(`aud_${id}`); LS.del(id);
+  post(id).pipeline={stage:'idea',script:null,audioBlob:null,audioUrl:null,audioDuration:null,timing:null,media:[],videoUrl:null,log:[]};
+  renderStudio(); toast('Post reset');
+}
+
+async function confirmClear() {
+  if(!confirm('Clear ALL data for all posts?')) return;
+  await IDB.clear(); LS.clearAll(); await init(); toast('All data cleared');
+}
+
+function blobToB64(blob){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result.split(',')[1]); r.onerror=rej; r.readAsDataURL(blob); }); }
+function b64Blob(b64,mime){ const b=atob(b64); const a=new Uint8Array(b.length); for(let i=0;i<b.length;i++) a[i]=b.charCodeAt(i); return new Blob([a],{type:mime}); }
+
+let _tt;
+function toast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),2500); }
+
+// ══════════════════════════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════════════════════════
+document.getElementById('page-library').innerHTML='<div style="padding:20px;color:var(--mu);display:flex;align-items:center;gap:8px"><span class="spin"></span> Loading…</div>';
+init();
+</script>
+</body>
+</html>
